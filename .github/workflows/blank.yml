@@ -43,9 +43,12 @@ jobs:
         git clone --depth=1 --branch v25.12.5 \
           https://github.com/openwrt/openwrt.git openwrt
 
-    - name: Clone Config Repository
-      run: |
-        git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/mzwrt/config.git config
+    - name: Checkout Config Repository
+      uses: actions/checkout@v4
+      with:
+        repository: mzwrt/config
+        token: ${{ secrets.CONFIG_PAT }}
+        path: config
 
     - name: Run DIY1
       working-directory: openwrt
