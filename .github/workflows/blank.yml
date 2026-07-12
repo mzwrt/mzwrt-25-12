@@ -102,26 +102,12 @@ jobs:
         ## MzWrt OpenWrt v25.12.5
 
         ### 更新内容
-        - 基于 OpenWrt **v25.12.5**
-        - 同步官方最新稳定源码
-        - 更新全部软件包
-        - 更新 Wireless-RegDB
-        - 默认启用 WiFi
-        - 自定义 MzWrt 配置
-
-        ### 固件说明
-        - Factory：首次刷机使用
-        - Sysupgrade：升级使用
+        - 2016-07-12 统一使用openssl 修正一些不合理的参数
 
         ### 默认信息
-        - IP：192.168.1.1
+        - IP：192.168.10.1
         - 用户名：root
-        - 密码：首次启动请自行设置
-
-        ### 编译信息
-        - GitHub Actions 自动编译
-        - Ubuntu 24.04
-        - UTC 时间：$(date -u +"%Y-%m-%d %H:%M:%S")
+        - 密码：无
         EOF
         
 
