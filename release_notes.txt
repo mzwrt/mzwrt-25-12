@@ -1,0 +1,25 @@
+## MzWrt · OpenWrt 25.12 · CMCC RAX3000M
+
+面向 **长期稳定安全** 使用，并针对双路径网络做了默认优化：
+
+- **国内 DIRECT**：软/硬 flow offload + packet steering → 低延迟、高速率
+- **跨境 PROXY**：内核 BBR + fq_pie + 放大 TCP 窗口；OpenClash 请用 **TUN + stack=system**
+- **稳定性**：内核 size 优化，关闭 memcg / io_uring / MPTCP / coredump；conntrack 与内存水位按 512MB 调优
+- **安全**：关闭 OpenSSL TLS compression 与 AFALG/devcrypto engine（避开 MTK `/dev/crypto` 不稳路径）；生产环境关闭 bpf_jit_kallsyms
+
+### 默认信息
+- 管理地址：`192.168.10.1`
+- 用户名：`root`
+- 密码：无（首次登录后请立刻设置）
+- 软件源：清华镜像（apk）
+
+### OpenClash 推荐（刷机后）
+详见固件内 `/etc/mzwrt/openclash-tuning.txt`：
+
+1. Fake-IP + TUN，协议栈选 **System**
+2. 规则模式，大陆 IP/域名 **DIRECT**
+3. 不要用 Global 模式日常上网；不要为了 Clash 关掉硬件卸载
+
+### Wi-Fi
+- 国家码默认 CN；监管域功率/DFS 使用自定义 regdb 补丁
+- 默认 qdisc：`fq_pie`
