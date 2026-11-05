@@ -127,6 +127,35 @@ jobs:
           cp -f ../openwrt-25-12/.config .config
           make defconfig
 
+          # 25.12 实测：个别 feed 内核模块可能在 defconfig 后被重新勾上。
+          # 对长期稳定无用的模块做强制剔除，再跑一次 defconfig 收敛依赖。
+          blacklist=(
+            CONFIG_PACKAGE_kmod-macremapper
+            CONFIG_PACKAGE_kmod-br-netfilter
+            CONFIG_PACKAGE_kmod-cryptodev
+            CONFIG_PACKAGE_kmod-crypto-user
+          )
+          for sym in "${blacklist[@]}"; do
+            sed -i "s/^${sym}=.*/# ${sym} is not set/" .config
+            grep -q "^# ${sym} is not set$" .config || echo "# ${sym} is not set" >> .config
+          done
+          make defconfig
+          for sym in "${blacklist[@]}"; do
+            sed -i "s/^${sym}=.*/# ${sym} is not set/" .config
+            if grep -q "^${sym}=y" .config || grep -q "^${sym}=m" .config; then
+              echo "ERROR: ${sym} still enabled after blacklist" >&2
+              grep -E "^${sym}=|^# ${sym} is not set" .config || true
+              exit 1
+            fi
+            echo "OK blacklist: ${sym}"
+          done
+          # 关键 OpenClash 配套仍在
+          grep -q '^CONFIG_PACKAGE_kmod-netlink-diag=y' .config
+          grep -q '^CONFIG_PACKAGE_kmod-tun=y' .config
+          grep -q '^CONFIG_PACKAGE_kmod-nft-offload=y' .config
+          grep -q '^CONFIG_OPENSSL_WITH_DEPRECATED=y' .config
+          grep -q '^# CONFIG_OPENSSL_ENGINE is not set$' .config || grep -q '^# CONFIG_OPENSSL_ENGINE is not set' .config
+
       - name: Download packages
         working-directory: ${{ env.WORK_ROOT }}/openwrt
         env:
