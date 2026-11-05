@@ -127,9 +127,14 @@ jobs:
           cp -f ../openwrt-25-12/.config .config
           make defconfig
 
-          # 25.12 实测：个别 feed 内核模块可能在 defconfig 后被重新勾上。
-          # 对长期稳定无用的模块做强制剔除，再跑一次 defconfig 收敛依赖。
+          # 25.12 实测：个别 feed 包可能在 defconfig 后被重新勾上。
+          # DCW 整条链（libdcw* → kmod-macremapper → br-netfilter）家用路由无用；
+          # 只禁 kmod 会留下 libdcwproto，apk 装 rootfs 时会因缺依赖失败。
           blacklist=(
+            CONFIG_PACKAGE_libdcwproto
+            CONFIG_PACKAGE_libdcwsocket
+            CONFIG_PACKAGE_dcwapd
+            CONFIG_PACKAGE_luci-app-dcwapd
             CONFIG_PACKAGE_kmod-macremapper
             CONFIG_PACKAGE_kmod-br-netfilter
             CONFIG_PACKAGE_kmod-cryptodev
